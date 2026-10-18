@@ -1,0 +1,29 @@
+=== EXPLORATORY DATA ANALYSIS (EDA) REPORT ===
+
+Total Samples: 5000
+Benign Samples: 3500 (70.00%)
+Ransomware Samples: 1500 (30.00%)
+
+Feature Correlations with Target Label:
+label                   1.000000
+mean_entropy            0.810413
+max_entropy             0.770322
+extension_changes       0.755299
+files_renamed_rate      0.752668
+files_modified_rate     0.688244
+disk_write_bytes_sec    0.637501
+files_deleted_rate      0.604108
+cpu_percent             0.601678
+disk_read_bytes_sec     0.495011
+network_bytes_sec      -0.141129
+
+Descriptive Statistics:
+       files_modified_rate  files_renamed_rate  files_deleted_rate  mean_entropy  max_entropy  extension_changes  disk_read_bytes_sec  disk_write_bytes_sec  cpu_percent  network_bytes_sec        label
+count          5000.000000         5000.000000         5000.000000   5000.000000  5000.000000        5000.000000         5.000000e+03          5.000000e+03  5000.000000       5.000000e+03  5000.000000
+mean             41.002196           19.500120            7.293613      5.395061     5.831129          21.991200         9.003399e+06          8.964627e+06    44.886244       1.120256e+06     0.300000
+std              47.567378           36.413730           10.961284      1.891787     1.745542          43.970579         8.961198e+06          9.926376e+06    25.520224       1.050257e+06     0.458303
+min               1.064848            0.000012            0.000061      1.689712     2.116450           0.000000         1.004575e+05          5.260060e+04     5.009292       1.117180e+04     0.000000
+25%              10.533756            0.565069            1.002915      3.619295     4.161927           0.000000         1.955097e+06          1.396304e+06    23.409592       4.083955e+05     0.000000
+50%              23.122882            1.437316            2.044001      5.573397     6.139724           0.000000         5.424653e+06          4.792905e+06    41.212272       7.862524e+05     0.000000
+75%              47.587262           15.695399            9.932192      7.612944     7.778389          18.000000         1.490746e+07          1.443158e+07    66.162279       1.403792e+06     1.000000
+max             199.890303          149.788167           79.634473      7.999000     7.999000         179.000000         3.488630e+07          3.999391e+07    98.972609       4.989908e+06     1.000000
