@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  threat-detector-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: cloud_threat_detector
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    restart: unless-stopped
+
+  sandbox-monitor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: cloud_sandbox_monitor
+    command: ["python", "src/monitoring/host_collector.py", "/app/data/sandbox/dummy_drive"]
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    depends_on:
+      - threat-detector-api

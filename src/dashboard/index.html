@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud Defense Sentinel | Real-Time Ransomware & Poisoning Attack Detection</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div>
+        <div class="brand-title">Cloud Defense Sentinel</div>
+        <div class="brand-subtitle">Real-Time Ransomware & Poisoning Attack Detection | DUET Cybersecurity FYDP</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-badge" id="systemStatusBadge">
+        <span class="status-dot"></span>
+        <span id="systemStatusText">Pipeline Active</span>
+      </div>
+      <div class="user-badge">
+        <span>👤 User: <strong id="currentUser">admin</strong> (SOC Admin)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('live-monitoring')">📊 Live Monitoring</button>
+    <button class="tab-btn" onclick="switchTab('active-alerts')">🚨 Active Alerts <span class="badge badge-critical" id="alertCountBadge">0</span></button>
+    <button class="tab-btn" onclick="switchTab('attack-history')">📜 Attack Log</button>
+    <button class="tab-btn" onclick="switchTab('poisoning-defense')">🛡️ Poisoning Defense & Quarantine</button>
+    <button class="tab-btn" onclick="switchTab('sandbox-lab')">🧪 Attack Simulator</button>
+    <button class="tab-btn" onclick="switchTab('forensic-reports')">📑 Forensic Reports</button>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="container">
+
+    <!-- ================= TAB 1: LIVE MONITORING ================= -->
+    <section id="live-monitoring" class="tab-content active">
+      <!-- Top Metrics Row -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-title">Telemetry Events Processed</div>
+          <div class="metric-value" id="valTotalEvents">0</div>
+          <div class="metric-sub">Across cloud instances & sandbox</div>
+        </div>
+        <div class="metric-card" id="cardThreatLevel">
+          <div class="metric-title">Active Threat Level</div>
+          <div class="metric-value" id="valThreatLevel" style="color: var(--accent-green);">NORMAL</div>
+          <div class="metric-sub" id="valThreatSub">Dual ML Engine Standby</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">File Modification Rate</div>
+          <div class="metric-value" id="valModRate">0.0 <span style="font-size: 1rem; color: var(--text-muted);">ops/min</span></div>
+          <div class="metric-sub">Sliding 60-second window</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Mean Shannon Entropy</div>
+          <div class="metric-value" id="valEntropy">3.42 <span style="font-size: 1rem; color: var(--text-muted);">bits/byte</span></div>
+          <div class="metric-sub">Threshold for cipher: &gt; 7.5</div>
+        </div>
+      </div>
+
+      <!-- Live Simulator Action Bar -->
+      <div class="sim-controls">
+        <span style="font-weight: 600; font-size: 0.9rem;">⚡ Quick Trigger:</span>
+        <button class="btn btn-danger" onclick="triggerSimulatedAttack()">💥 Launch Simulated Ransomware Attack</button>
+        <button class="btn btn-primary" onclick="triggerSimulatedBenign()">📁 Run Benign Routine Workload</button>
+        <span id="simNotification" style="font-size: 0.85rem; color: var(--accent-cyan); margin-left: auto;"></span>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-grid">
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title">📈 Real-Time Behavioral Telemetry Stream</div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Auto-refreshed every 2.5s</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="telemetryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="card-header">
+            <div class="card-title">🎯 Threat Probability Radar</div>
+          </div>
+          <div class="chart-container">
+            <canvas id="threatRadarChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Telemetry Stream Log Feed -->
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">📡 Live Telemetry Stream Feed</div>
+          <button class="btn" style="padding: 0.3rem 0.75rem;" onclick="clearLogFeed()">Clear Feed</button>
+        </div>
+        <div class="log-box" id="telemetryLogFeed">
+          <div class="log-line"><span class="log-time">[System]</span> <span class="log-benign">Cloud Defense Sentinel agent monitoring initialized. Pipeline listening for events...</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: ACTIVE ALERTS ================= -->
+    <section id="active-alerts" class="tab-content">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">🚨 Active Threat Detections & Alerts</div>
+          <button class="btn" onclick="loadAlerts()">🔄 Refresh Alerts</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Alert ID</th>
+                <th>Timestamp</th>
+                <th>Severity</th>
+                <th>Threat Type</th>
+                <th>Confidence</th>
+                <th>Affected Resource</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="alertsTableBody">
+              <tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No active security alerts. System normal.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: ATTACK LOG ================= -->
+    <section id="attack-history" class="tab-content">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">📜 Immutable Attack & Incident Log</div>
+          <button class="btn" onclick="loadAttackLog()">🔄 Refresh Log</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Incident ID</th>
+                <th>Detected At</th>
+                <th>Attack Type</th>
+                <th>Severity</th>
+                <th>Confidence</th>
+                <th>Source Host / Resource</th>
+                <th>Top Attribution Signals</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attacksTableBody">
+              <tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No historical attacks logged.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: POISONING DEFENSE ================= -->
+    <section id="poisoning-defense" class="tab-content">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">🛡️ Upstream Retraining Security Gate & Sanitizer</div>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">
+          Before candidate telemetry batches are used to retrain the ML detection models, they pass through multi-stage sanitization (k-NN label-consistency voting, LOF spatial density checking, and trusted hold-out validation regression gating). Flagged samples are routed to the Quarantine Store.
+        </p>
+        
+        <div class="sim-controls" style="margin-bottom: 1.5rem;">
+          <label style="font-weight: 600; font-size: 0.85rem;">Select Candidate Retraining Batch:</label>
+          <select id="selectDataset" style="background: var(--bg-glass); color: #fff; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+            <option value="train_poisoned_label_flip_5pct.csv">5% Label-Flipped Candidate Dataset</option>
+            <option value="train_poisoned_label_flip_10pct.csv" selected>10% Label-Flipped Candidate Dataset</option>
+            <option value="train_poisoned_label_flip_20pct.csv">20% Label-Flipped Candidate Dataset (Extreme)</option>
+            <option value="train_poisoned_injected_10pct.csv">10% Injected Crafted Backdoor Dataset</option>
+          </select>
+          <button class="btn btn-primary" onclick="triggerPoisoningDefense()">🛡️ Run Multi-Stage Sanitizer & Gate Retraining</button>
+        </div>
+
+        <div id="sanitizationResultBox" style="display: none; background: rgba(31, 41, 55, 0.4); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+          <h4 style="margin-bottom: 0.75rem; color: var(--accent-indigo);">Sanitization Audit Summary</h4>
+          <div id="sanitizationSummaryContent" style="font-size: 0.9rem; line-height: 1.6;"></div>
+        </div>
+
+        <div class="card-header" style="margin-top: 1.5rem;">
+          <div class="card-title">📦 Poisoning Quarantine Store</div>
+          <button class="btn" onclick="loadQuarantine()">🔄 Refresh Quarantine</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Quarantine ID</th>
+                <th>Timestamp</th>
+                <th>Reason Code</th>
+                <th>Outlier Score</th>
+                <th>k-NN Agreement</th>
+                <th>Disposition</th>
+              </tr>
+            </thead>
+            <tbody id="quarantineTableBody">
+              <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Quarantine store is currently empty.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: ATTACK SIMULATOR ================= -->
+    <section id="sandbox-lab" class="tab-content">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">🧪 Safe Cloud Workload & Attack Simulation Harness</div>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Simulate cloud workloads and ransomware attacks inside an isolated dummy virtual drive (<code>data/sandbox/dummy_drive/</code>). Watch how Shannon entropy escalates and triggers real-time alerts without affecting your computer.
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 1.25rem;">
+            <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;">📁 Benign Routine Workload</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Simulates standard user edits, file reads, and normal application log writes. File entropy remains low (~3.5 bits/byte).
+            </p>
+            <button class="btn btn-success" onclick="triggerSimulatedBenign()">Execute Benign Simulation</button>
+          </div>
+
+          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 1.25rem;">
+            <h3 style="color: var(--accent-rose); margin-bottom: 0.5rem;">💥 Rapid Ransomware Encryption</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Simulates high-speed symmetric encryption. Files are overwritten with cryptographic pseudorandom bytes (Entropy &gt; 7.9) and renamed to <code>.locked</code>.
+            </p>
+            <button class="btn btn-danger" onclick="triggerSimulatedAttack()">Launch Ransomware Simulation</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 6: FORENSIC REPORTS ================= -->
+    <section id="forensic-reports" class="tab-content">
+      <div class="dashboard-card">
+        <div class="card-header">
+          <div class="card-title">📑 Forensic Reports & Compliance Export</div>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Generate and export tamper-evident forensic incident reports and model health audits for post-incident debriefing and academic defense.
+        </p>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="/api/reports/export?format=csv" class="btn btn-primary" download="security_incident_report.csv">
+            📥 Download Consolidated CSV Attack Log
+          </a>
+          <button class="btn" onclick="printReportSummary()">📄 Print Executive Report Summary</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    BS Cybersecurity Final Year Design Project (FYDP-1 & FYDP-2) | Dawood University of Engineering & Technology, Karachi<br>
+    Supervised by <strong>Sir Arfan Naich</strong> | Group: Sofia Naseem (40), Sobia Khan (54), Hiba Siddiqui (56)
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
