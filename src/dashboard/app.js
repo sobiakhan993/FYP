@@ -92,108 +92,19 @@ async function loadInitialData() {
 
 // ---------------- TAB 1: BATCH REPLAY & SIMULATION ----------------
 async function replayNextBatch() {
-  batchIndexCounter++;
-  const batchId = `stream_batch_${String(batchIndexCounter).padStart(4, '0')}`;
-  
-  // Construct a realistic micro-batch
-  const samples = [];
-  for (let i = 0; i < 20; i++) {
-    samples.push({
-      sample_id: `smpl_${Math.random().toString(16).substring(2, 10)}`,
-      timestamp: new Date().toISOString(),
-      features: {
-        flow_duration: 12.0 + Math.random() * 5.0,
-        total_fwd_packets: Math.floor(10 + Math.random() * 5),
-        total_bwd_packets: Math.floor(12 + Math.random() * 6),
-        total_length_fwd_packets: 2500 + Math.random() * 500,
-        total_length_bwd_packets: 8000 + Math.random() * 1000,
-        flow_bytes_per_sec: 800 + Math.random() * 100,
-        flow_packets_per_sec: 1.8 + Math.random() * 0.4,
-        fwd_packet_length_mean: 250 + Math.random() * 30,
-        bwd_packet_length_mean: 640 + Math.random() * 40,
-        flow_iat_mean: 0.5 + Math.random() * 0.1,
-        fwd_iat_mean: 1.2 + Math.random() * 0.2,
-        packet_length_std: 110 + Math.random() * 20,
-        syn_flag_count: 0.0,
-        ack_flag_count: 1.0,
-        down_up_ratio: 1.2,
-        average_packet_size: 470.0
-      },
-      label: 0
-    });
-  }
-
-  await submitBatchToApi(batchId, samples, false);
+  await requestStreamReplay(25, 0.0);
 }
 
 async function injectPoisonBatch(rate = 0.20) {
-  batchIndexCounter++;
-  const batchId = `attack_batch_${String(batchIndexCounter).padStart(4, '0')}`;
-  const samples = [];
-
-  // Generate a batch with label-flipped & injected malicious flows
-  for (let i = 0; i < 20; i++) {
-    const isPoison = (i < Math.floor(20 * rate));
-    if (isPoison) {
-      // Malicious flooding pattern deceptively labeled as 0 (Benign) -> Label Flipping
-      samples.push({
-        sample_id: `smpl_pois_${Math.random().toString(16).substring(2, 10)}`,
-        timestamp: new Date().toISOString(),
-        features: {
-          flow_duration: 0.02 + Math.random() * 0.05,
-          total_fwd_packets: 300 + Math.random() * 50,
-          total_bwd_packets: 1,
-          total_length_fwd_packets: 18000,
-          total_length_bwd_packets: 40,
-          flow_bytes_per_sec: 450000 + Math.random() * 50000,
-          flow_packets_per_sec: 7500,
-          fwd_packet_length_mean: 60,
-          bwd_packet_length_mean: 40,
-          flow_iat_mean: 0.0001,
-          fwd_iat_mean: 0.0001,
-          packet_length_std: 8.0,
-          syn_flag_count: 1.0,
-          ack_flag_count: 0.0,
-          down_up_ratio: 0.003,
-          average_packet_size: 59.9
-        },
-        label: 0 // Flipped label!
-      });
-    } else {
-      samples.push({
-        sample_id: `smpl_${Math.random().toString(16).substring(2, 10)}`,
-        timestamp: new Date().toISOString(),
-        features: {
-          flow_duration: 14.0, total_fwd_packets: 12, total_bwd_packets: 15,
-          total_length_fwd_packets: 2800, total_length_bwd_packets: 9000,
-          flow_bytes_per_sec: 840, flow_packets_per_sec: 1.9,
-          fwd_packet_length_mean: 245, bwd_packet_length_mean: 620,
-          flow_iat_mean: 0.52, fwd_iat_mean: 1.15, packet_length_std: 115,
-          syn_flag_count: 0.0, ack_flag_count: 1.0, down_up_ratio: 1.25,
-          average_packet_size: 468.0
-        },
-        label: 0
-      });
-    }
-  }
-
-  await submitBatchToApi(batchId, samples, true);
+  await requestStreamReplay(25, rate);
 }
 
-async function submitBatchToApi(batchId, samples, isAttack) {
+async function requestStreamReplay(batchSize, poisonRate) {
   try {
-    const payload = {
-      batch_id: batchId,
-      source: isAttack ? 'adversarial_stream_injector' : 'cloud_ids_stream_replayer',
-      received_at: new Date().toISOString(),
-      record_count: samples.length,
-      samples: samples
-    };
-
-    const res = await fetch('/api/batches/ingest', {
+    const res = await fetch('/api/stream/replay-batch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ batch_size: batchSize, poison_rate: poisonRate })
     });
 
     const result = await res.json();
@@ -210,29 +121,31 @@ async function submitBatchToApi(batchId, samples, isAttack) {
     if (totalBatchesCount === 1) tbody.innerHTML = '';
 
     const row = document.createElement('tr');
-    const statusBadge = result.quarantined_count > 0 
-      ? `<span class="badge badge-danger">⚠️ ${result.quarantined_count} Quarantined</span>`
+    const isAttack = result.quarantined_count > 0;
+    const statusBadge = isAttack 
+      ? `<span class="badge" style="background:#ef4444;">⚠️ ${result.quarantined_count} Quarantined</span>`
       : `<span class="badge badge-success">✅ Clean Ingestion</span>`;
 
     row.innerHTML = `
       <td><code>${result.batch_id}</code></td>
       <td>${result.total_samples}</td>
       <td><span class="text-success">${result.accepted_count}</span></td>
-      <td><span class="text-danger">${result.quarantined_count}</span></td>
+      <td><span class="${isAttack ? 'text-danger font-bold' : 'text-muted'}">${result.quarantined_count}</span></td>
       <td>${result.processing_latency_ms} ms</td>
       <td>${statusBadge}</td>
     `;
     tbody.prepend(row);
 
-    // Update radar chart if anomalies found
-    if (result.quarantined_count > 0) {
-      updateRadarChart(0.85, 0.98, 0.92, 0.91);
-      logAgentActivity(`[POISON DETECTED] Batch ${batchId}: Flagged ${result.quarantined_count} records. Routed to Quarantine Store.`, 'danger');
+    // Update radar chart and agent log
+    if (isAttack) {
+      updateRadarChart(0.78, 1.00, 0.95, 0.88);
+      logAgentActivity(`[POISON DETECTED] ${result.batch_id}: Multi-layer defense identified ${result.quarantined_count} label-flipped records! Routed to Quarantine Store.`, 'danger');
     } else {
       updateRadarChart(0.12, 0.05, 0.02, 0.06);
-      logAgentActivity(`[CLEAN INGESTION] Batch ${batchId}: Processed ${result.total_samples} records. Added to sanitized training buffer.`, 'info');
+      logAgentActivity(`[CLEAN INGESTION] ${result.batch_id}: All ${result.total_samples} records passed sanitization checks. Added to training candidate buffer.`, 'info');
     }
 
+    // Refresh Quarantine store table
     loadQuarantineRecords();
   } catch (err) {
     console.error('Batch ingest failed:', err);

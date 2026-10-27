@@ -153,6 +153,61 @@ def ingest_batch(batch: BatchRecord):
         processing_latency_ms=round(latency_ms, 2)
     )
 
+class StreamReplayRequest(BaseModel):
+    batch_size: int = 25
+    poison_rate: float = 0.0
+
+stream_cursor = 0
+
+@app.post("/api/stream/replay-batch", response_model=BatchScoringResult)
+def replay_stream_batch(req: StreamReplayRequest):
+    global stream_cursor
+    import uuid
+    from datetime import datetime, timezone
+    from src.attacks.label_flip import LabelFlipAttacker
+    from src.common.types import SampleRecord
+
+    total_val = len(val_df)
+    start_i = stream_cursor % total_val
+    end_i = min(start_i + req.batch_size, total_val)
+    chunk = val_df.iloc[start_i:end_i].copy()
+    stream_cursor += req.batch_size
+
+    # Apply controlled attack if requested
+    if req.poison_rate > 0:
+        attacker = LabelFlipAttacker(random_seed=int(time.time()))
+        chunk, _ = attacker.apply_attack(chunk, poison_rate=req.poison_rate)
+        batch_id = f"attack_batch_{uuid.uuid4().hex[:8]}"
+        src_name = f"adversarial_injector_{int(req.poison_rate*100)}pct"
+    else:
+        batch_id = f"stream_batch_{uuid.uuid4().hex[:8]}"
+        src_name = "cloud_telemetry_replayer"
+
+    samples = []
+    now_str = datetime.now(timezone.utc).isoformat()
+    for _, row in chunk.iterrows():
+        feat_dict = {f: float(row[f]) for f in features}
+        smpl = SampleRecord(
+            sample_id=f"smpl_{uuid.uuid4().hex[:10]}",
+            timestamp=now_str,
+            features=feat_dict,
+            label=int(row[target]),
+            source_id=src_name,
+            ground_truth_poisoned=bool(row.get("is_poisoned", False))
+        )
+        samples.append(smpl)
+
+    batch_record = BatchRecord(
+        batch_id=batch_id,
+        source=src_name,
+        received_at=now_str,
+        record_count=len(samples),
+        samples=samples
+    )
+
+    return ingest_batch(batch_record)
+
+
 @app.get("/api/quarantine")
 def list_quarantine_records(
     status: Optional[str] = Query(None, description="Filter by status: PENDING_REVIEW, APPROVED_CLEAN, CONFIRMED_POISON"),
