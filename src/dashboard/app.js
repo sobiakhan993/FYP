@@ -203,14 +203,19 @@ async function reviewSample(sampleId, newStatus) {
     const res = await fetch(`/api/quarantine/${sampleId}/review`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ new_status: newStatus, reviewer_notes: 'Triaged from dashboard' })
+      body: JSON.stringify({ new_status: newStatus, reviewer_notes: `Triaged by Analyst via Dashboard (${new Date().toLocaleTimeString()})` })
     });
     if (res.ok) {
-      logAgentActivity(`[TRIAGE] Sample ${sampleId} marked as ${newStatus}`, newStatus === 'APPROVED_CLEAN' ? 'success' : 'danger');
+      alert(`✅ Action Applied: Sample ${sampleId} marked as ${newStatus}`);
       loadQuarantineRecords();
+      runLiveTriage();
+    } else {
+      const err = await res.json();
+      alert(`❌ Error updating sample: ${err.detail || 'Unknown error'}`);
     }
   } catch (err) {
     console.error('Review update failed:', err);
+    alert('❌ Network error: Could not contact API server.');
   }
 }
 
