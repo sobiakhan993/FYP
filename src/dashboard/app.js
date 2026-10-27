@@ -23,6 +23,10 @@ function switchTab(tabId) {
   if (target) {
     target.classList.add('active');
   }
+
+  if (tabId === 'agent-console') {
+    runLiveTriage();
+  }
 }
 
 function initRadarChart() {
@@ -304,36 +308,146 @@ async function loadBenchmarkResults() {
   }
 }
 
-// ---------------- TAB 5: AGENT OPS ----------------
-function logAgentActivity(msg, type = 'info') {
-  const box = document.getElementById('agentConsoleBox');
-  const line = document.createElement('div');
-  line.className = `console-line text-${type}`;
-  const now = new Date().toLocaleTimeString();
-  line.innerText = `[${now}] ${msg}`;
-  box.appendChild(line);
-  box.scrollTop = box.scrollHeight;
+// ---------------- TAB 5: INDUSTRY 5.0 AUTONOMOUS AGENTS ----------------
+
+async function runLiveTriage() {
+  const container = document.getElementById('triageReportsContainer');
+  container.innerHTML = '<p class="text-info">SecOps Triage Agent investigating pending quarantine records...</p>';
+
+  try {
+    const res = await fetch('/api/agents/triage/pending?limit=10');
+    const data = await res.json();
+
+    if (data.reports.length === 0) {
+      container.innerHTML = '<p class="text-muted">No pending quarantined samples require triage. The pipeline is operating cleanly.</p>';
+      return;
+    }
+
+    container.innerHTML = '';
+    data.reports.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'info-card';
+      card.style.marginBottom = '1rem';
+      card.style.borderLeft = r.severity === 'CRITICAL' ? '4px solid #ef4444' : '4px solid #f59e0b';
+
+      const featList = r.top_anomalous_features.map(f => `<li><code>${f.feature}</code> (Z-score: <strong>${f.z_score > 0 ? '+' : ''}${f.z_score}</strong>): ${f.explanation}</li>`).join('');
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <div>
+            <strong style="font-size: 0.95rem;">${r.sample_id}</strong>
+            <span class="badge ${r.severity === 'CRITICAL' ? 'badge-danger' : 'badge-warning'}" style="margin-left: 0.5rem;">${r.severity}</span>
+            <span class="badge badge-success" style="margin-left: 0.25rem;">Confidence: ${(r.confidence_score * 100).toFixed(0)}%</span>
+          </div>
+          <small class="text-muted">${r.threat_classification}</small>
+        </div>
+
+        <p style="font-size: 0.85rem; margin-bottom: 0.6rem;"><strong>Executive Summary:</strong> ${r.executive_summary}</p>
+        
+        <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 0.4rem;"><strong>Root-Cause Anomalous Features:</strong></p>
+        <ul style="font-size: 0.8rem; margin-left: 1.2rem; color: #cbd5e1; margin-bottom: 0.8rem;">
+          ${featList}
+        </ul>
+
+        <div style="background: rgba(0,0,0,0.25); padding: 0.6rem; border-radius: 6px; font-size: 0.82rem; margin-bottom: 0.75rem;">
+          <strong>Agent Recommendation:</strong> <span class="${r.recommended_action === 'CONFIRM_POISON' ? 'text-danger font-bold' : 'text-success'}">${r.recommended_action}</span> — ${r.mitigation_rationale}
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-danger btn-sm" onclick="reviewSample('${r.sample_id}', 'CONFIRMED_POISON')">Confirm Poison (Permanent Drop)</button>
+          <button class="btn btn-outline btn-sm" onclick="reviewSample('${r.sample_id}', 'APPROVED_CLEAN')">Approve Clean (False Alarm)</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error('Triage run failed:', err);
+    container.innerHTML = '<p class="text-danger">Failed to execute Triage Agent.</p>';
+  }
 }
 
-function runAgentTriage() {
-  logAgentActivity('Starting Autonomous Quarantine Triage pass...', 'info');
-  setTimeout(() => {
-    logAgentActivity('Evaluated 12 quarantined samples against topological density rules.', 'info');
-    logAgentActivity('Confirmed 12/12 records as True Positives (Label Flipping Evasion). Status -> CONFIRMED_POISON.', 'danger');
-    logAgentActivity('Quarantine store sanitized. Ready for next cycle.', 'success');
-  }, 800);
+async function generateGuardTicket() {
+  const container = document.getElementById('guardTicketContainer');
+  container.innerHTML = '<p class="text-info">Poisoning Guard Agent validating sanitized buffer & training candidate model...</p>';
+
+  try {
+    const res = await fetch('/api/agents/guard/prepare-ticket', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model_type: 'random_forest', training_data_path: 'data/processed/train.csv' })
+    });
+    const ticket = await res.json();
+    renderTicketCard(ticket);
+  } catch (err) {
+    console.error('Ticket generation failed:', err);
+    container.innerHTML = '<p class="text-danger">Failed to generate retraining ticket.</p>';
+  }
 }
 
-function triggerSelfHealingRetrain() {
-  logAgentActivity('Self-Healing Retraining Cycle initiated by Agent.', 'info');
-  setTimeout(() => {
-    logAgentActivity('Sanitized training buffer loaded: 7000 clean records (Zero Quarantined Data).', 'info');
-    logAgentActivity('Candidate Random Forest model trained in 1.4s.', 'info');
-    logAgentActivity('Trusted Validation Gate evaluation: Holdout F1 = 1.0000 (Pass).', 'success');
-    logAgentActivity('Model Registry promoted candidate as active production version.', 'success');
-  }, 1200);
+function renderTicketCard(ticket) {
+  const container = document.getElementById('guardTicketContainer');
+  const card = document.createElement('div');
+  card.className = 'info-card';
+  card.style.borderLeft = ticket.gate_passed ? '4px solid #10b981' : '4px solid #ef4444';
+
+  const statusBadge = ticket.status === 'AWAITING_ANALYST_APPROVAL'
+    ? '<span class="badge badge-warning">Awaiting Analyst Sign-off</span>'
+    : ticket.status === 'DEPLOYED_TO_PRODUCTION'
+    ? '<span class="badge badge-success">Deployed to Production</span>'
+    : '<span class="badge badge-danger">Blocked by Gate</span>';
+
+  card.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <div>
+        <strong>Ticket: <code>${ticket.ticket_id}</code></strong>
+        <span style="margin-left: 0.5rem;">${statusBadge}</span>
+      </div>
+      <small class="text-muted">Candidate: <strong>${ticket.candidate_version || 'N/A'}</strong></small>
+    </div>
+
+    <div class="info-row"><span>Active Production Model:</span> <strong>${ticket.active_version}</strong></div>
+    <div class="info-row"><span>Candidate Holdout Accuracy:</span> <strong>${ticket.metrics ? (ticket.metrics.accuracy * 100).toFixed(1) + '%' : 'N/A'}</strong></div>
+    <div class="info-row"><span>Candidate Holdout F1-Score:</span> <strong>${ticket.metrics ? ticket.metrics.f1_score.toFixed(4) : 'N/A'}</strong></div>
+    <div class="info-row"><span>Validation Gate Decision:</span> <strong class="${ticket.gate_passed ? 'text-success' : 'text-danger'}">${ticket.gate_passed ? 'PASSED (0.00% Regression)' : 'FAILED'}</strong></div>
+
+    <p style="font-size: 0.85rem; margin-top: 0.75rem; color: #94a3b8;">
+      <strong>Guard Recommendation:</strong> ${ticket.recommendation}
+    </p>
+
+    ${ticket.status === 'AWAITING_ANALYST_APPROVAL' ? `
+      <div style="margin-top: 1rem;">
+        <button class="btn btn-primary" onclick="signoffTicket('${ticket.ticket_id}')">
+          ✅ Analyst Sign-off & Deploy ${ticket.candidate_version} to Production
+        </button>
+      </div>
+    ` : ''}
+  `;
+
+  container.innerHTML = '';
+  container.appendChild(card);
+}
+
+async function signoffTicket(ticketId) {
+  try {
+    const res = await fetch(`/api/agents/guard/tickets/${ticketId}/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ analyst_id: 'Sir_Arfan_Naich' })
+    });
+    const result = await res.json();
+    if (res.ok) {
+      alert(`Success! ${result.message}`);
+      loadModelGovernance();
+      renderTicketCard(result.ticket);
+    } else {
+      alert(`Approval rejected: ${result.detail}`);
+    }
+  } catch (err) {
+    console.error('Signoff failed:', err);
+  }
 }
 
 function exportQuarantineCsv() {
   window.open('/api/quarantine', '_blank');
 }
+

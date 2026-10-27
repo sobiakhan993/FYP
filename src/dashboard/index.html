@@ -270,49 +270,37 @@
     <!-- ================= TAB 5: AUTONOMOUS DEFENSE AGENT ================= -->
     <section id="agent-console" class="tab-content">
       <div class="split-grid">
+        <!-- Left: Guard Agent & Human-in-the-Loop Retraining -->
         <div class="panel">
           <div class="panel-header">
-            <h3>🤖 Autonomous SecOps Defense Agent</h3>
-            <span class="badge badge-success">Agent Online</span>
+            <h3>🛡️ Agent 2: Poisoning Guard (Industry 5.0 HITL)</h3>
+            <span class="badge badge-success">Online & Enforcing</span>
           </div>
           <div class="panel-body">
-            <p class="panel-desc">The Autonomous Defense Agent continuously inspects the quarantine store, correlates multi-layer telemetry signals, and triggers self-healing retraining workflows when sanitized buffers reach optimal volume.</p>
+            <p class="panel-desc">Monitors training buffer hygiene, evaluates candidates against the isolated Trusted Holdout Gate, and generates Human-in-the-Loop Promotion Tickets.</p>
             
-            <div class="agent-card">
-              <div class="agent-stat">
-                <span class="agent-label">Agent State:</span>
-                <span class="agent-val">MONITORING_STREAM</span>
-              </div>
-              <div class="agent-stat">
-                <span class="agent-label">Decision Policy:</span>
-                <span class="agent-val">Weighted Multi-Layer Voting (wA=0.35, wB=0.40, wC=0.25)</span>
-              </div>
-              <div class="agent-stat">
-                <span class="agent-label">Self-Healing Retraining:</span>
-                <span class="agent-val text-success">Enabled (Trigger at 500 clean samples)</span>
-              </div>
-              <div class="agent-stat">
-                <span class="agent-label">Auto-Rollback on Anomaly:</span>
-                <span class="agent-val text-success">Active</span>
-              </div>
+            <div style="margin-bottom: 1.25rem;">
+              <button class="btn btn-primary" onclick="generateGuardTicket()">⚡ Generate Retraining Promotion Ticket</button>
             </div>
 
-            <div style="margin-top: 1.5rem;">
-              <button class="btn btn-primary" onclick="runAgentTriage()">⚡ Execute Autonomous Quarantine Triage</button>
-              <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="triggerSelfHealingRetrain()">🔄 Trigger Safe Retraining Cycle</button>
+            <div id="guardTicketContainer">
+              <div class="info-card">
+                <p class="text-muted">No pending promotion tickets. Click "Generate Retraining Promotion Ticket" above to evaluate a sanitized candidate model on the Trusted Holdout Gate.</p>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- Right: Agent 1 SecOps Triage Agent Briefings -->
         <div class="panel">
           <div class="panel-header">
-            <h3>📜 Agent Activity & Audit Telemetry</h3>
+            <h3>🔬 Agent 1: SecOps Triage Agent</h3>
+            <button class="btn btn-outline btn-sm" onclick="runLiveTriage()">🔄 Refresh Triage</button>
           </div>
           <div class="panel-body">
-            <div class="console-box" id="agentConsoleBox">
-              <div class="console-line text-muted">[SYSTEM INIT] Autonomous SecOps Defense Agent initialized.</div>
-              <div class="console-line text-info">[CONFIG] Loaded multi-layer detectors: Layer A (IsoForest), Layer B (k-NN), Layer C (Margin Loss).</div>
-              <div class="console-line text-success">[READY] Model Registry linked to active model v1.0.0. Listening for micro-batches...</div>
+            <p class="panel-desc">Automated forensic investigation & SHAP feature attribution for quarantined records.</p>
+            <div id="triageReportsContainer" style="max-height: 480px; overflow-y: auto;">
+              <p class="text-muted">Awaiting quarantined records to triage... Replay or inject a poisoned batch in Tab 1.</p>
             </div>
           </div>
         </div>

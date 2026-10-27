@@ -266,6 +266,68 @@ def get_experiments():
         "results": df.to_dict(orient="records")
     }
 
+# ================= INDUSTRY 5.0 AGENT ENDPOINTS =================
+from src.agents.triage_agent import SecOpsTriageAgent
+from src.agents.guard_agent import PoisoningGuardAgent
+
+triage_agent = SecOpsTriageAgent(quarantine_store=quarantine_store)
+guard_agent = PoisoningGuardAgent(registry=model_registry, quarantine_store=quarantine_store)
+
+@app.get("/api/agents/triage/pending")
+def agent_triage_pending(limit: int = Query(10, ge=1, le=50)):
+    reports = triage_agent.triage_pending_quarantine(limit=limit)
+    return {
+        "agent": "SecOps Triage Agent",
+        "triaged_count": len(reports),
+        "reports": reports
+    }
+
+@app.get("/api/agents/triage/{sample_id}")
+def agent_investigate_sample(sample_id: str):
+    try:
+        report = triage_agent.investigate_sample(sample_id)
+        return report
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+class PrepareTicketRequest(BaseModel):
+    model_type: str = "random_forest"
+    training_data_path: str = "data/processed/train.csv"
+
+@app.post("/api/agents/guard/prepare-ticket")
+def agent_prepare_ticket(req: PrepareTicketRequest = Body(...)):
+    ticket = guard_agent.prepare_retraining_ticket(
+        training_data_path=req.training_data_path,
+        model_type=req.model_type
+    )
+    safe_ticket = {k: v for k, v in ticket.items() if k != "candidate_model_obj"}
+    return safe_ticket
+
+@app.get("/api/agents/guard/tickets")
+def agent_list_tickets():
+    return {
+        "agent": "Poisoning Guard Agent",
+        "tickets": guard_agent.get_pending_tickets()
+    }
+
+class ApproveTicketRequest(BaseModel):
+    analyst_id: str = "Sir_Arfan_Naich"
+
+@app.post("/api/agents/guard/tickets/{ticket_id}/approve")
+def agent_approve_ticket(ticket_id: str, req: ApproveTicketRequest = Body(...)):
+    try:
+        updated_ticket = guard_agent.approve_and_deploy_ticket(ticket_id, analyst_id=req.analyst_id)
+        # Refresh active model in Layer C
+        new_model, new_meta = model_registry.get_active_model()
+        det_c.set_active_model(new_model)
+        return {
+            "success": True,
+            "message": f"Candidate model {updated_ticket['candidate_version']} approved by {req.analyst_id} and deployed to Cloud Production.",
+            "ticket": {k: v for k, v in updated_ticket.items() if k != "candidate_model_obj"}
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 # Mount Web Dashboard Frontend
 import os
 dashboard_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dashboard"))
