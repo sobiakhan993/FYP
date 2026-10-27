@@ -1,0 +1,33 @@
+detectors:
+  layer_a_statistical:
+    enabled: true
+    algorithm: "isolation_forest" # options: "isolation_forest", "local_outlier_factor"
+    n_estimators: 100
+    contamination: 0.08
+    random_state: 42
+    weight: 0.35
+    anomaly_threshold: 0.55
+
+  layer_b_label_consistency:
+    enabled: true
+    algorithm: "knn_consistency"
+    n_neighbors: 11
+    weight: 0.40
+    inconsistency_threshold: 0.50
+
+  layer_c_model_based:
+    enabled: true
+    algorithm: "prediction_loss_margin"
+    weight: 0.25
+    margin_threshold: 0.65
+
+combiner:
+  decision_policy: "weighted_score" # options: "weighted_score", "majority_vote", "any_trigger"
+  quarantine_threshold: 0.50
+  suspicious_review_threshold: 0.35
+
+quarantine:
+  storage_type: "sqlite" # options: "sqlite", "postgresql"
+  db_path: "data/quarantine.db"
+  auto_purge: false
+  audit_logging: true

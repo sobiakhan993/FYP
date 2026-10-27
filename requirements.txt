@@ -1,12 +1,17 @@
-# Project Dependencies
-# Real-Time Ransomware and Poisoning Attack Detection in Cloud Environment Using Machine Learning
+# Production & Experiment Dependencies
+# Real-Time Detection and Mitigation of Data Poisoning Attacks on Continuously Retrained Cloud Intrusion Detection Systems
+# BS Cybersecurity FYDP - Dawood University of Engineering and Technology
 
-flask>=3.0.0
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-psutil>=5.9.0
-watchdog>=3.0.0
-matplotlib>=3.7.0
-joblib>=1.3.0
-scipy>=1.10.0
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pydantic>=2.8.0
+pandas>=2.2.0
+numpy>=2.0.0
+scikit-learn>=1.5.0
+scipy>=1.14.0
+joblib>=1.4.0
+pyyaml>=6.0.0
+matplotlib>=3.9.0
+requests>=2.32.0
+pytest>=8.3.0
+psutil>=6.0.0

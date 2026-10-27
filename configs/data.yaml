@@ -1,0 +1,42 @@
+dataset:
+  name: "CIC-IDS-Cloud-Flow"
+  raw_path: "data/raw/network_flows_raw.csv"
+  processed_dir: "data/processed"
+  trusted_holdout_path: "data/processed/trusted_validation.csv"
+  splits:
+    train_ratio: 0.70
+    val_ratio: 0.15
+    trusted_holdout_ratio: 0.15
+  random_seed: 42
+
+features:
+  numerical:
+    - "flow_duration"
+    - "total_fwd_packets"
+    - "total_bwd_packets"
+    - "total_length_fwd_packets"
+    - "total_length_bwd_packets"
+    - "flow_bytes_per_sec"
+    - "flow_packets_per_sec"
+    - "fwd_packet_length_mean"
+    - "bwd_packet_length_mean"
+    - "flow_iat_mean"
+    - "fwd_iat_mean"
+    - "packet_length_std"
+    - "syn_flag_count"
+    - "ack_flag_count"
+    - "down_up_ratio"
+    - "average_packet_size"
+  target: "label"
+  positive_class: 1 # Malicious Intrusion
+  negative_class: 0 # Benign Traffic
+
+validation_rules:
+  drop_duplicates: true
+  drop_nulls: true
+  non_negative_fields:
+    - "flow_duration"
+    - "total_fwd_packets"
+    - "total_bwd_packets"
+    - "flow_bytes_per_sec"
+    - "flow_packets_per_sec"

@@ -1,0 +1,41 @@
+experiments:
+  experiment_name: "poisoning_impact_and_defense_evaluation"
+  output_dir: "experiments/results"
+  random_seeds: [42, 123, 999]
+  
+  attacks:
+    - name: "label_flipping"
+      type: "label_flip"
+      source_class: 1 # Invert malicious samples to benign (stealth evasion)
+      target_class: 0
+      rates: [0.05, 0.10, 0.20]
+
+    - name: "sample_injection"
+      type: "sample_injection"
+      generator: "gaussian_boundary_perturbation"
+      rates: [0.05, 0.10, 0.20]
+
+  comparison_groups:
+    - "clean_baseline_no_defense"
+    - "poisoned_baseline_no_defense"
+    - "poisoned_with_layer_a_only"
+    - "poisoned_with_layer_b_only"
+    - "poisoned_with_layer_c_only"
+    - "poisoned_with_combined_defense"
+    - "candidate_validation_gate_active"
+
+  metrics:
+    detection:
+      - "precision"
+      - "recall"
+      - "f1_score"
+      - "false_quarantine_rate"
+    ids_victim_model:
+      - "precision"
+      - "recall"
+      - "f1_score"
+      - "false_positive_rate"
+      - "roc_auc"
+    operational:
+      - "batch_latency_ms"
+      - "throughput_records_sec"

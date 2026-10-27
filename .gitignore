@@ -1,16 +1,38 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+# Environments
 .env
+.env.local
 venv/
 env/
 .venv/
+
+# Testing & Coverage
 .pytest_cache/
 .coverage
 htmlcov/
 *.log
+
+# Operating System Files
 .DS_Store
 Thumbs.db
+
+# Databases & Runtime State
 *.db
-data/sandbox/dummy_drive/
+*.sqlite3
+data/quarantine.db
+
+# Model binaries & caches (store registry manifests in git, not large binaries)
+models/*.joblib
+!models/.gitkeep
+models/registry/*.joblib
+!models/registry/.gitkeep
+
+# Large raw datasets (track metadata / scripts, not raw gigs)
+data/raw/*.pcap
+data/raw/*.csv.gz
+data/sandbox/

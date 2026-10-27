@@ -1,0 +1,15 @@
+stream:
+  mode: "micro_batch"
+  batch_size: 100
+  interval_seconds: 1.0
+  source_type: "csv_replay"
+  source_file: "data/processed/val.csv"
+  timestamp_column: "timestamp"
+  enable_simulated_delay: true
+  max_batches_per_run: 50
+
+queue:
+  provider: "local_memory" # or "redis_streams"
+  redis_url: "redis://localhost:6379/0"
+  stream_key: "ids:telemetry:stream"
+  group_name: "poisoning_defense_group"

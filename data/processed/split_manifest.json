@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-10-27T22:54:38.170716",
+  "random_seed": 42,
+  "sample_counts": {
+    "total_raw": 10000,
+    "train": 7000,
+    "val": 1500,
+    "trusted_holdout": 1500
+  },
+  "sha256_hashes": {
+    "train_raw": "1944053e37038c8b04a41a222dd66eceaa386df253d95bf8c8a19eea0d7ffcd4",
+    "val_raw": "f0c172d0667e8754a7808e4d90adf454fa8e55b746006d5ac32793df0f4f1294",
+    "trusted_raw": "3083217fd0ab594aed499ff3d5889d312e2a5c751e5e5a6c07e6cf4f68faf624",
+    "train": "f6d2b29d8caa20617c5d08e6c64a475cac160b050b5d025744c253486948b164",
+    "val": "5cd31b7387eb08589eb143da098a741f5ebd4127b49dba694f266a2110751926",
+    "trusted_validation": "9b037c6c2ab64be85cd1e1b4682f3684c5a2e8c2f6c5626cfe6defa64fe3c95a"
+  }
+}

@@ -3,282 +3,323 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cloud Defense Sentinel | Real-Time Ransomware & Poisoning Attack Detection</title>
+  <title>Cloud IDS Poisoning Defense & Model Governance Platform</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
-  <!-- Chart.js CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
+  <!-- Top Navigation Header -->
   <header class="topbar">
     <div class="brand">
-      <div class="brand-icon">🛡️</div>
+      <div class="brand-badge">🛡️ AML-IDS</div>
       <div>
-        <div class="brand-title">Cloud Defense Sentinel</div>
-        <div class="brand-subtitle">Real-Time Ransomware & Poisoning Attack Detection | DUET Cybersecurity FYDP</div>
+        <div class="brand-title">Cloud IDS Poisoning Defense Platform</div>
+        <div class="brand-subtitle">Real-Time Detection & Mitigation on Continuously Retrained Cloud IDS | DUET Cybersecurity FYDP</div>
       </div>
     </div>
     <div class="topbar-right">
-      <div class="status-badge" id="systemStatusBadge">
+      <div class="status-pill status-healthy" id="systemStatusPill">
         <span class="status-dot"></span>
-        <span id="systemStatusText">Pipeline Active</span>
+        <span id="systemStatusText">Pipeline Active & Guarded</span>
       </div>
-      <div class="user-badge">
-        <span>👤 User: <strong id="currentUser">admin</strong> (SOC Admin)</span>
+      <div class="model-badge">
+        <span>Active Model: <strong id="activeModelTag">v1.0.0</strong></span>
+      </div>
+      <div class="operator-badge">
+        <span>👤 Supervisor: Sir Arfan Naich</span>
       </div>
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
+  <!-- Navigation Bar -->
   <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('live-monitoring')">📊 Live Monitoring</button>
-    <button class="tab-btn" onclick="switchTab('active-alerts')">🚨 Active Alerts <span class="badge badge-critical" id="alertCountBadge">0</span></button>
-    <button class="tab-btn" onclick="switchTab('attack-history')">📜 Attack Log</button>
-    <button class="tab-btn" onclick="switchTab('poisoning-defense')">🛡️ Poisoning Defense & Quarantine</button>
-    <button class="tab-btn" onclick="switchTab('sandbox-lab')">🧪 Attack Simulator</button>
-    <button class="tab-btn" onclick="switchTab('forensic-reports')">📑 Forensic Reports</button>
+    <button class="tab-btn active" onclick="switchTab('stream-monitor')">📡 Live Telemetry & Threat Radar</button>
+    <button class="tab-btn" onclick="switchTab('quarantine-console')">🛑 Quarantine Store & Audit <span class="badge" id="quarantineBadge">0</span></button>
+    <button class="tab-btn" onclick="switchTab('model-governance')">⚖️ Validation Gate & Rollback</button>
+    <button class="tab-btn" onclick="switchTab('experiments-benchmark')">📊 Empirical Evaluation Benchmark</button>
+    <button class="tab-btn" onclick="switchTab('agent-console')">🤖 Autonomous Defense Agent</button>
   </nav>
 
-  <!-- Main Content Container -->
+  <!-- Main Container -->
   <main class="container">
 
-    <!-- ================= TAB 1: LIVE MONITORING ================= -->
-    <section id="live-monitoring" class="tab-content active">
-      <!-- Top Metrics Row -->
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-title">Telemetry Events Processed</div>
-          <div class="metric-value" id="valTotalEvents">0</div>
-          <div class="metric-sub">Across cloud instances & sandbox</div>
+    <!-- KPI Summary Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Batches Processed</span>
+          <span class="kpi-icon">📦</span>
         </div>
-        <div class="metric-card" id="cardThreatLevel">
-          <div class="metric-title">Active Threat Level</div>
-          <div class="metric-value" id="valThreatLevel" style="color: var(--accent-green);">NORMAL</div>
-          <div class="metric-sub" id="valThreatSub">Dual ML Engine Standby</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-title">File Modification Rate</div>
-          <div class="metric-value" id="valModRate">0.0 <span style="font-size: 1rem; color: var(--text-muted);">ops/min</span></div>
-          <div class="metric-sub">Sliding 60-second window</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-title">Mean Shannon Entropy</div>
-          <div class="metric-value" id="valEntropy">3.42 <span style="font-size: 1rem; color: var(--text-muted);">bits/byte</span></div>
-          <div class="metric-sub">Threshold for cipher: &gt; 7.5</div>
-        </div>
+        <div class="kpi-value" id="kpiBatchesCount">0</div>
+        <div class="kpi-sub">Network telemetry micro-batches</div>
       </div>
 
-      <!-- Live Simulator Action Bar -->
-      <div class="sim-controls">
-        <span style="font-weight: 600; font-size: 0.9rem;">⚡ Quick Trigger:</span>
-        <button class="btn btn-danger" onclick="triggerSimulatedAttack()">💥 Launch Simulated Ransomware Attack</button>
-        <button class="btn btn-primary" onclick="triggerSimulatedBenign()">📁 Run Benign Routine Workload</button>
-        <span id="simNotification" style="font-size: 0.85rem; color: var(--accent-cyan); margin-left: auto;"></span>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Quarantined Records</span>
+          <span class="kpi-icon">🛑</span>
+        </div>
+        <div class="kpi-value kpi-danger" id="kpiQuarantineCount">0</div>
+        <div class="kpi-sub">Suspicious poisoning isolated</div>
       </div>
 
-      <!-- Charts Row -->
-      <div class="charts-grid">
-        <div class="dashboard-card">
-          <div class="card-header">
-            <div class="card-title">📈 Real-Time Behavioral Telemetry Stream</div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Auto-refreshed every 2.5s</span>
-          </div>
-          <div class="chart-container">
-            <canvas id="telemetryChart"></canvas>
-          </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Detection F1-Score</span>
+          <span class="kpi-icon">🎯</span>
         </div>
-
-        <div class="dashboard-card">
-          <div class="card-header">
-            <div class="card-title">🎯 Threat Probability Radar</div>
-          </div>
-          <div class="chart-container">
-            <canvas id="threatRadarChart"></canvas>
-          </div>
-        </div>
+        <div class="kpi-value kpi-success" id="kpiDetectionF1">100.0%</div>
+        <div class="kpi-sub">Combined multi-layer accuracy</div>
       </div>
 
-      <!-- Live Telemetry Stream Log Feed -->
-      <div class="dashboard-card">
-        <div class="card-header">
-          <div class="card-title">📡 Live Telemetry Stream Feed</div>
-          <button class="btn" style="padding: 0.3rem 0.75rem;" onclick="clearLogFeed()">Clear Feed</button>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Active IDS Performance</span>
+          <span class="kpi-icon">🛡️</span>
         </div>
-        <div class="log-box" id="telemetryLogFeed">
-          <div class="log-line"><span class="log-time">[System]</span> <span class="log-benign">Cloud Defense Sentinel agent monitoring initialized. Pipeline listening for events...</span></div>
+        <div class="kpi-value" id="kpiActiveF1">1.0000</div>
+        <div class="kpi-sub">Holdout F1 under protection</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-title">Median Batch Latency</span>
+          <span class="kpi-icon">⚡</span>
         </div>
+        <div class="kpi-value" id="kpiLatency">33.8 ms</div>
+        <div class="kpi-sub">Real-time inline scoring overhead</div>
       </div>
     </section>
 
-    <!-- ================= TAB 2: ACTIVE ALERTS ================= -->
-    <section id="active-alerts" class="tab-content">
-      <div class="dashboard-card">
-        <div class="card-header">
-          <div class="card-title">🚨 Active Threat Detections & Alerts</div>
-          <button class="btn" onclick="loadAlerts()">🔄 Refresh Alerts</button>
-        </div>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Alert ID</th>
-                <th>Timestamp</th>
-                <th>Severity</th>
-                <th>Threat Type</th>
-                <th>Confidence</th>
-                <th>Affected Resource</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="alertsTableBody">
-              <tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No active security alerts. System normal.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 3: ATTACK LOG ================= -->
-    <section id="attack-history" class="tab-content">
-      <div class="dashboard-card">
-        <div class="card-header">
-          <div class="card-title">📜 Immutable Attack & Incident Log</div>
-          <button class="btn" onclick="loadAttackLog()">🔄 Refresh Log</button>
-        </div>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Incident ID</th>
-                <th>Detected At</th>
-                <th>Attack Type</th>
-                <th>Severity</th>
-                <th>Confidence</th>
-                <th>Source Host / Resource</th>
-                <th>Top Attribution Signals</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="attacksTableBody">
-              <tr><td colspan="8" style="text-align:center; color:var(--text-muted);">No historical attacks logged.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 4: POISONING DEFENSE ================= -->
-    <section id="poisoning-defense" class="tab-content">
-      <div class="dashboard-card">
-        <div class="card-header">
-          <div class="card-title">🛡️ Upstream Retraining Security Gate & Sanitizer</div>
-        </div>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">
-          Before candidate telemetry batches are used to retrain the ML detection models, they pass through multi-stage sanitization (k-NN label-consistency voting, LOF spatial density checking, and trusted hold-out validation regression gating). Flagged samples are routed to the Quarantine Store.
-        </p>
-        
-        <div class="sim-controls" style="margin-bottom: 1.5rem;">
-          <label style="font-weight: 600; font-size: 0.85rem;">Select Candidate Retraining Batch:</label>
-          <select id="selectDataset" style="background: var(--bg-glass); color: #fff; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-            <option value="train_poisoned_label_flip_5pct.csv">5% Label-Flipped Candidate Dataset</option>
-            <option value="train_poisoned_label_flip_10pct.csv" selected>10% Label-Flipped Candidate Dataset</option>
-            <option value="train_poisoned_label_flip_20pct.csv">20% Label-Flipped Candidate Dataset (Extreme)</option>
-            <option value="train_poisoned_injected_10pct.csv">10% Injected Crafted Backdoor Dataset</option>
-          </select>
-          <button class="btn btn-primary" onclick="triggerPoisoningDefense()">🛡️ Run Multi-Stage Sanitizer & Gate Retraining</button>
-        </div>
-
-        <div id="sanitizationResultBox" style="display: none; background: rgba(31, 41, 55, 0.4); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
-          <h4 style="margin-bottom: 0.75rem; color: var(--accent-indigo);">Sanitization Audit Summary</h4>
-          <div id="sanitizationSummaryContent" style="font-size: 0.9rem; line-height: 1.6;"></div>
-        </div>
-
-        <div class="card-header" style="margin-top: 1.5rem;">
-          <div class="card-title">📦 Poisoning Quarantine Store</div>
-          <button class="btn" onclick="loadQuarantine()">🔄 Refresh Quarantine</button>
-        </div>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Quarantine ID</th>
-                <th>Timestamp</th>
-                <th>Reason Code</th>
-                <th>Outlier Score</th>
-                <th>k-NN Agreement</th>
-                <th>Disposition</th>
-              </tr>
-            </thead>
-            <tbody id="quarantineTableBody">
-              <tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Quarantine store is currently empty.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= TAB 5: ATTACK SIMULATOR ================= -->
-    <section id="sandbox-lab" class="tab-content">
-      <div class="dashboard-card">
-        <div class="card-header">
-          <div class="card-title">🧪 Safe Cloud Workload & Attack Simulation Harness</div>
-        </div>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
-          Simulate cloud workloads and ransomware attacks inside an isolated dummy virtual drive (<code>data/sandbox/dummy_drive/</code>). Watch how Shannon entropy escalates and triggers real-time alerts without affecting your computer.
-        </p>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 1.25rem;">
-            <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;">📁 Benign Routine Workload</h3>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-              Simulates standard user edits, file reads, and normal application log writes. File entropy remains low (~3.5 bits/byte).
-            </p>
-            <button class="btn btn-success" onclick="triggerSimulatedBenign()">Execute Benign Simulation</button>
+    <!-- ================= TAB 1: LIVE TELEMETRY & RADAR ================= -->
+    <section id="stream-monitor" class="tab-content active">
+      <div class="split-grid">
+        <!-- Left: Stream Controller & Ingestion Log -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>📡 Stream Ingestion & Attack Simulator</h3>
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="replayNextBatch()">▶ Replay Next Batch (Clean)</button>
+              <button class="btn btn-danger" onclick="injectPoisonBatch(0.20)">⚠️ Inject 20% Poisoned Batch</button>
+            </div>
           </div>
+          <div class="panel-body">
+            <p class="panel-desc">Stream incoming network flow micro-batches through Schema Validation, Layer A (Isolation Forest), Layer B ($k$-NN Consistency), and Layer C (Model Loss Margin).</p>
+            <div class="table-wrapper">
+              <table class="data-table" id="batchLogTable">
+                <thead>
+                  <tr>
+                    <th>Batch ID</th>
+                    <th>Records</th>
+                    <th>Accepted</th>
+                    <th>Quarantined</th>
+                    <th>Latency</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="batchLogBody">
+                  <tr><td colspan="6" class="text-muted">Awaiting stream ingestion... Click "Replay Next Batch" above.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 1.25rem;">
-            <h3 style="color: var(--accent-rose); margin-bottom: 0.5rem;">💥 Rapid Ransomware Encryption</h3>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-              Simulates high-speed symmetric encryption. Files are overwritten with cryptographic pseudorandom bytes (Entropy &gt; 7.9) and renamed to <code>.locked</code>.
-            </p>
-            <button class="btn btn-danger" onclick="triggerSimulatedAttack()">Launch Ransomware Simulation</button>
+        <!-- Right: Multi-Layer Anomaly Radar Chart -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>🔬 Multi-Layer Defense Signal Radar</h3>
+          </div>
+          <div class="panel-body chart-container">
+            <canvas id="defenseRadarChart"></canvas>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= TAB 6: FORENSIC REPORTS ================= -->
-    <section id="forensic-reports" class="tab-content">
-      <div class="dashboard-card">
-        <div class="card-header">
-          <div class="card-title">📑 Forensic Reports & Compliance Export</div>
+    <!-- ================= TAB 2: QUARANTINE STORE & AUDIT ================= -->
+    <section id="quarantine-console" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h3>🛑 Auditable Quarantine Store</h3>
+          <div class="btn-group">
+            <button class="btn btn-outline" onclick="loadQuarantineRecords()">🔄 Refresh</button>
+            <button class="btn btn-outline" onclick="exportQuarantineCsv()">📥 Export CSV</button>
+          </div>
         </div>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
-          Generate and export tamper-evident forensic incident reports and model health audits for post-incident debriefing and academic defense.
-        </p>
+        <div class="panel-body">
+          <p class="panel-desc">Quarantined records are isolated here with full forensic explanations. Analysts or autonomous triage agents can inspect individual features and approve clean false-positives or confirm malicious poisoning.</p>
+          
+          <div class="table-wrapper">
+            <table class="data-table" id="quarantineTable">
+              <thead>
+                <tr>
+                  <th>Sample ID</th>
+                  <th>Batch ID</th>
+                  <th>Claimed Label</th>
+                  <th>Combined Risk</th>
+                  <th>Layer Breakdown</th>
+                  <th>Forensic Reason</th>
+                  <th>Status</th>
+                  <th>Triage Actions</th>
+                </tr>
+              </thead>
+              <tbody id="quarantineBody">
+                <tr><td colspan="8" class="text-muted">Loading quarantine store...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <a href="/api/reports/export?format=csv" class="btn btn-primary" download="security_incident_report.csv">
-            📥 Download Consolidated CSV Attack Log
-          </a>
-          <button class="btn" onclick="printReportSummary()">📄 Print Executive Report Summary</button>
+    <!-- ================= TAB 3: VALIDATION GATE & ROLLBACK ================= -->
+    <section id="model-governance" class="tab-content">
+      <div class="split-grid">
+        <!-- Model Registry Status -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>⚖️ Active Model Lineage</h3>
+            <button class="btn btn-danger" onclick="triggerRollback()">⏪ Instant 1-Click Rollback</button>
+          </div>
+          <div class="panel-body">
+            <div class="info-card">
+              <div class="info-row"><span>Active Version:</span> <strong id="govActiveVersion">v1.0.0</strong></div>
+              <div class="info-row"><span>Model Family:</span> <strong>Random Forest Classifier (100 Trees)</strong></div>
+              <div class="info-row"><span>Status:</span> <span class="badge badge-success">ACTIVE & PROMOTED</span></div>
+              <div class="info-row"><span>Trusted Holdout Accuracy:</span> <strong id="govAccuracy">100.0%</strong></div>
+              <div class="info-row"><span>Trusted Holdout F1-Score:</span> <strong id="govF1">1.0000</strong></div>
+              <div class="info-row"><span>False Positive Rate:</span> <strong id="govFPR">0.00%</strong></div>
+              <div class="info-row"><span>Promoted At:</span> <span id="govPromotedAt">-</span></div>
+            </div>
+            
+            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Governance & Promotion Rules</h4>
+            <ul class="rule-list">
+              <li>✅ <strong>Zero Quarantined Data:</strong> Candidates trained strictly on sanitized buffer.</li>
+              <li>✅ <strong>Isolated Holdout:</strong> Evaluated on immutable <code>trusted_validation.csv</code>.</li>
+              <li>✅ <strong>Regression Gating:</strong> Promotion strictly blocked if F1 drops &gt; 3.0%.</li>
+              <li>✅ <strong>Instant Fallback:</strong> Reverts to previous approved artifact on failure.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Validation Gate Audit Log -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>🛡️ Validation Gate Promotion History</h3>
+          </div>
+          <div class="panel-body">
+            <div class="table-wrapper">
+              <table class="data-table" id="registryHistoryTable">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Version</th>
+                    <th>F1-Score</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="registryHistoryBody">
+                  <tr><td colspan="4" class="text-muted">Loading history...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: EMPIRICAL BENCHMARK ================= -->
+    <section id="experiments-benchmark" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h3>📊 Real Empirical Results & Ablation Matrix</h3>
+          <button class="btn btn-primary" onclick="loadBenchmarkResults()">🔄 Refresh Results</button>
+        </div>
+        <div class="panel-body">
+          <p class="panel-desc">Direct measurements from <code>experiments/results/experiment_results.csv</code> showing real-world poisoning degradation without defense versus mitigation with individual layers and combined defense.</p>
+          <div class="table-wrapper">
+            <table class="data-table" id="benchmarkTable">
+              <thead>
+                <tr>
+                  <th>Attack Scenario</th>
+                  <th>Poison Rate</th>
+                  <th>Defense Mode</th>
+                  <th>Detection Precision</th>
+                  <th>Detection Recall</th>
+                  <th>Detection F1</th>
+                  <th>False Quarantine</th>
+                  <th>Retrained IDS F1</th>
+                  <th>Gate Decision</th>
+                  <th>Latency (ms)</th>
+                </tr>
+              </thead>
+              <tbody id="benchmarkBody">
+                <tr><td colspan="10" class="text-muted">Loading benchmark matrix...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: AUTONOMOUS DEFENSE AGENT ================= -->
+    <section id="agent-console" class="tab-content">
+      <div class="split-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>🤖 Autonomous SecOps Defense Agent</h3>
+            <span class="badge badge-success">Agent Online</span>
+          </div>
+          <div class="panel-body">
+            <p class="panel-desc">The Autonomous Defense Agent continuously inspects the quarantine store, correlates multi-layer telemetry signals, and triggers self-healing retraining workflows when sanitized buffers reach optimal volume.</p>
+            
+            <div class="agent-card">
+              <div class="agent-stat">
+                <span class="agent-label">Agent State:</span>
+                <span class="agent-val">MONITORING_STREAM</span>
+              </div>
+              <div class="agent-stat">
+                <span class="agent-label">Decision Policy:</span>
+                <span class="agent-val">Weighted Multi-Layer Voting (wA=0.35, wB=0.40, wC=0.25)</span>
+              </div>
+              <div class="agent-stat">
+                <span class="agent-label">Self-Healing Retraining:</span>
+                <span class="agent-val text-success">Enabled (Trigger at 500 clean samples)</span>
+              </div>
+              <div class="agent-stat">
+                <span class="agent-label">Auto-Rollback on Anomaly:</span>
+                <span class="agent-val text-success">Active</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" onclick="runAgentTriage()">⚡ Execute Autonomous Quarantine Triage</button>
+              <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="triggerSelfHealingRetrain()">🔄 Trigger Safe Retraining Cycle</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>📜 Agent Activity & Audit Telemetry</h3>
+          </div>
+          <div class="panel-body">
+            <div class="console-box" id="agentConsoleBox">
+              <div class="console-line text-muted">[SYSTEM INIT] Autonomous SecOps Defense Agent initialized.</div>
+              <div class="console-line text-info">[CONFIG] Loaded multi-layer detectors: Layer A (IsoForest), Layer B (k-NN), Layer C (Margin Loss).</div>
+              <div class="console-line text-success">[READY] Model Registry linked to active model v1.0.0. Listening for micro-batches...</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
   </main>
-
-  <!-- Footer -->
-  <footer>
-    BS Cybersecurity Final Year Design Project (FYDP-1 & FYDP-2) | Dawood University of Engineering & Technology, Karachi<br>
-    Supervised by <strong>Sir Arfan Naich</strong> | Group: Sofia Naseem (40), Sobia Khan (54), Hiba Siddiqui (56)
-  </footer>
 
   <script src="app.js"></script>
 </body>
