@@ -1,32 +1,32 @@
 attack_type,poison_rate,defense_mode,detection_precision,detection_recall,detection_f1,false_quarantine_rate,ids_f1_after_retraining,gate_action,median_batch_latency_ms
-None (Clean),0%,No Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,184.52
+None (Clean),0%,No Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,169.79
 Label Flipping,5%,No Defense,0.0,0.0,0.0,0.0,0.9882,PROMOTED,0.0
-Label Flipping,5%,Layer A (Statistical),0.1086,0.0686,0.0841,0.0296,0.9813,PROMOTED,54.37
-Label Flipping,5%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,54.37
-Label Flipping,5%,Layer C (Model-Based),1.0,1.0,1.0,0.0,1.0,PROMOTED,54.37
-Label Flipping,5%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,54.37
+Label Flipping,5%,Layer A (Statistical),0.1086,0.0686,0.0841,0.0296,0.9813,PROMOTED,49.43
+Label Flipping,5%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,49.43
+Label Flipping,5%,Layer C (Model-Based),1.0,1.0,1.0,0.0,1.0,PROMOTED,49.43
+Label Flipping,5%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,49.43
 Label Flipping,10%,No Defense,0.0,0.0,0.0,0.0,0.6486,PROMOTED (Unprotected),0.0
-Label Flipping,10%,Layer A (Statistical),0.2172,0.0686,0.1042,0.0275,0.6456,BLOCKED_BY_GATE,33.81
-Label Flipping,10%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,33.81
-Label Flipping,10%,Layer C (Model-Based),1.0,1.0,1.0,0.0,1.0,PROMOTED,33.81
-Label Flipping,10%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,33.81
+Label Flipping,10%,Layer A (Statistical),0.2172,0.0686,0.1042,0.0275,0.6456,BLOCKED_BY_GATE,38.74
+Label Flipping,10%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,38.74
+Label Flipping,10%,Layer C (Model-Based),1.0,1.0,1.0,0.0,1.0,PROMOTED,38.74
+Label Flipping,10%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,38.74
 Label Flipping,20%,No Defense,0.0,0.0,0.0,0.0,0.0,PROMOTED (Unprotected),0.0
-Label Flipping,20%,Layer A (Statistical),0.4434,0.07,0.1209,0.022,0.0,BLOCKED_BY_GATE,28.99
-Label Flipping,20%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,0.0,BLOCKED_BY_GATE,28.99
-Label Flipping,20%,Layer C (Model-Based),1.0,1.0,1.0,0.0,0.0,BLOCKED_BY_GATE,28.99
-Label Flipping,20%,Combined Defense,1.0,1.0,1.0,0.0,0.0,BLOCKED_BY_GATE,28.99
+Label Flipping,20%,Layer A (Statistical),0.4434,0.07,0.1209,0.022,0.0,BLOCKED_BY_GATE,36.78
+Label Flipping,20%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,0.0,BLOCKED_BY_GATE,36.78
+Label Flipping,20%,Layer C (Model-Based),1.0,1.0,1.0,0.0,0.0,BLOCKED_BY_GATE,36.78
+Label Flipping,20%,Combined Defense,1.0,1.0,1.0,0.0,0.0,BLOCKED_BY_GATE,36.78
 Sample Injection,5%,No Defense,0.0,0.0,0.0,0.0,1.0,PROMOTED,0.0
-Sample Injection,5%,Layer A (Statistical),0.48,0.5829,0.5265,0.0316,1.0,PROMOTED,33.33
-Sample Injection,5%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,33.33
-Sample Injection,5%,Layer C (Model-Based),1.0,0.9657,0.9826,0.0,1.0,PROMOTED,33.33
-Sample Injection,5%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,33.33
+Sample Injection,5%,Layer A (Statistical),0.48,0.5829,0.5265,0.0316,1.0,PROMOTED,38.31
+Sample Injection,5%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,38.31
+Sample Injection,5%,Layer C (Model-Based),1.0,0.9657,0.9826,0.0,1.0,PROMOTED,38.31
+Sample Injection,5%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,38.31
 Sample Injection,10%,No Defense,0.0,0.0,0.0,0.0,1.0,PROMOTED,0.0
-Sample Injection,10%,Layer A (Statistical),0.6435,0.57,0.6045,0.0316,1.0,PROMOTED,34.69
-Sample Injection,10%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,34.69
-Sample Injection,10%,Layer C (Model-Based),1.0,0.9629,0.9811,0.0,1.0,PROMOTED,34.69
-Sample Injection,10%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,34.69
+Sample Injection,10%,Layer A (Statistical),0.6435,0.57,0.6045,0.0316,1.0,PROMOTED,38.47
+Sample Injection,10%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,38.47
+Sample Injection,10%,Layer C (Model-Based),1.0,0.9629,0.9811,0.0,1.0,PROMOTED,38.47
+Sample Injection,10%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,38.47
 Sample Injection,20%,No Defense,0.0,0.0,0.0,0.0,1.0,PROMOTED,0.0
-Sample Injection,20%,Layer A (Statistical),0.7835,0.5714,0.6609,0.0316,0.9983,PROMOTED,37.75
-Sample Injection,20%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,37.75
-Sample Injection,20%,Layer C (Model-Based),1.0,0.9579,0.9785,0.0,1.0,PROMOTED,37.75
-Sample Injection,20%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,37.75
+Sample Injection,20%,Layer A (Statistical),0.7835,0.5714,0.6609,0.0316,0.9983,PROMOTED,43.8
+Sample Injection,20%,Layer B (Label Consistency),1.0,1.0,1.0,0.0,1.0,PROMOTED,43.8
+Sample Injection,20%,Layer C (Model-Based),1.0,0.9579,0.9785,0.0,1.0,PROMOTED,43.8
+Sample Injection,20%,Combined Defense,1.0,1.0,1.0,0.0,1.0,PROMOTED,43.8

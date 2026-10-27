@@ -1,10 +1,46 @@
 {
-  "active_version": "v1.0.0",
+  "active_version": "v1.6.0",
   "history": [
     {
       "action": "PROMOTE",
       "version": "v1.0.0",
       "timestamp": "2026-10-27T18:01:59.053726+00:00",
+      "f1_score": 1.0
+    },
+    {
+      "action": "PROMOTE",
+      "version": "v1.1.0",
+      "timestamp": "2026-10-27T19:25:21.681231+00:00",
+      "f1_score": 1.0
+    },
+    {
+      "action": "PROMOTE",
+      "version": "v1.2.0",
+      "timestamp": "2026-10-27T19:25:38.485495+00:00",
+      "f1_score": 1.0
+    },
+    {
+      "action": "PROMOTE",
+      "version": "v1.3.0",
+      "timestamp": "2026-10-27T19:28:05.982130+00:00",
+      "f1_score": 1.0
+    },
+    {
+      "action": "PROMOTE",
+      "version": "v1.4.0",
+      "timestamp": "2026-10-27T19:28:23.435351+00:00",
+      "f1_score": 1.0
+    },
+    {
+      "action": "PROMOTE",
+      "version": "v1.5.0",
+      "timestamp": "2026-10-27T19:40:08.839657+00:00",
+      "f1_score": 1.0
+    },
+    {
+      "action": "PROMOTE",
+      "version": "v1.6.0",
+      "timestamp": "2026-10-27T19:44:53.275588+00:00",
       "f1_score": 1.0
     }
   ],
@@ -14,7 +50,7 @@
       "filename": "model_v1.0.0.joblib",
       "path": "models\\registry\\model_v1.0.0.joblib",
       "promoted_at": "2026-10-27T18:01:59.053726+00:00",
-      "status": "ACTIVE",
+      "status": "SUPERSEDED",
       "validation_metrics": {
         "accuracy": 1.0,
         "precision": 1.0,
@@ -23,6 +59,96 @@
         "false_positive_rate": 0.0
       },
       "notes": "Initial clean baseline model"
+    },
+    "v1.1.0": {
+      "version": "v1.1.0",
+      "filename": "model_v1.1.0.joblib",
+      "path": "models\\registry\\model_v1.1.0.joblib",
+      "promoted_at": "2026-10-27T19:25:21.681231+00:00",
+      "status": "SUPERSEDED",
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "notes": "Authorized and approved by Supervisor_Test via Industry 5.0 HITL Protocol"
+    },
+    "v1.2.0": {
+      "version": "v1.2.0",
+      "filename": "model_v1.2.0.joblib",
+      "path": "models\\registry\\model_v1.2.0.joblib",
+      "promoted_at": "2026-10-27T19:25:38.485495+00:00",
+      "status": "SUPERSEDED",
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "notes": "Authorized and approved by Supervisor_Test via Industry 5.0 HITL Protocol"
+    },
+    "v1.3.0": {
+      "version": "v1.3.0",
+      "filename": "model_v1.3.0.joblib",
+      "path": "models\\registry\\model_v1.3.0.joblib",
+      "promoted_at": "2026-10-27T19:28:05.982130+00:00",
+      "status": "SUPERSEDED",
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "notes": "Authorized and approved by Sir_Arfan_Naich via Industry 5.0 HITL Protocol"
+    },
+    "v1.4.0": {
+      "version": "v1.4.0",
+      "filename": "model_v1.4.0.joblib",
+      "path": "models\\registry\\model_v1.4.0.joblib",
+      "promoted_at": "2026-10-27T19:28:23.435351+00:00",
+      "status": "SUPERSEDED",
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "notes": "Authorized and approved by Supervisor_Test via Industry 5.0 HITL Protocol"
+    },
+    "v1.5.0": {
+      "version": "v1.5.0",
+      "filename": "model_v1.5.0.joblib",
+      "path": "models\\registry\\model_v1.5.0.joblib",
+      "promoted_at": "2026-10-27T19:40:08.839657+00:00",
+      "status": "SUPERSEDED",
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "notes": "Authorized and approved by Sir_Arfan_Naich via Industry 5.0 HITL Protocol"
+    },
+    "v1.6.0": {
+      "version": "v1.6.0",
+      "filename": "model_v1.6.0.joblib",
+      "path": "models\\registry\\model_v1.6.0.joblib",
+      "promoted_at": "2026-10-27T19:44:53.275588+00:00",
+      "status": "ACTIVE",
+      "validation_metrics": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "notes": "Authorized and approved by Supervisor_Test via Industry 5.0 HITL Protocol"
     }
   }
 }
